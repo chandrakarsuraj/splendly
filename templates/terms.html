@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Terms and Conditions — Spendly{% endblock %}
+
+{% block content %}
+<div class="terms-container" style="max-width: 800px; margin: 40px auto; padding: 0 20px; line-height: 1.6; color: #333;">
+    <h1 style="font-family: 'DM Serif Display', serif; margin-bottom: 24px;">Terms and Conditions</h1>
+    <p>Last updated: October 19, 2026</p>
+
+    <section style="margin-top: 32px;">
+        <h2>Acceptance of Terms</h2>
+        <p>By accessing or using the Spendly expense tracking application, you agree to be bound by these Terms and Conditions. If you do not agree to these terms, please do not use the service.</p>
+    </section>
+
+    <section style="margin-top: 32px;">
+        <h2>Use of Service</h2>
+        <p>Spendly is provided for personal financial tracking purposes. You agree to use the service only for lawful purposes and in a manner that does not infringe the rights of others or restrict the use of the service by others.</p>
+    </section>
+
+    <section style="margin-top: 32px;">
+        <h2>User Data</h2>
+        <p>Your financial data is your own. We do not sell your personal expense logs to third parties. By using the service, you acknowledge that you are responsible for the accuracy of the data you input.</p>
+    </section>
+
+    <section style="margin-top: 32px;">
+        <h2>Limitations of Liability</h2>
+        <p>Spendly is provided "as is" without warranties of any kind. We are not responsible for any financial losses or damages resulting from the use or inability to use this application. This tool is an aid for tracking, not professional financial advice.</p>
+    </section>
+
+    <section style="margin-top: 32px;">
+        <h2>Changes to Terms</h2>
+        <p>We reserve the right to modify these terms at any time. Any changes will be reflected on this page. Your continued use of the app after changes are posted constitutes your acceptance of the new terms.</p>
+    </section>
+
+    <div style="margin-top: 48px; border-top: 1px solid #eee; padding-top: 24px;">
+        <a href="{{ url_for('landing') }}" style="text-decoration: none; color: #666;">← Back to Home</a>
+    </div>
+</div>
+{% endblock %}
