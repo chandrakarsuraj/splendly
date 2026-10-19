@@ -1,0 +1,7 @@
+ ▐▛███▛█   Claude Code v2.1.303
+▝▜██████▀  qwen2.5:0.5b[1m] · API Usage Billing
+ ▝▝   ▝▝   ~/Desktop/expense-tracker
+
+
+❯ /code-review                                                                  
+  ⎿  Running in the background as @code-review
