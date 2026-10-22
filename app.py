@@ -1,7 +1,11 @@
-from flask import Flask, render_template
-from database.db import init_db, seed_db
+import os
+from flask import Flask, render_template, request, redirect, url_for, flash
+from database.db import init_db, seed_db, get_db
+from werkzeug.security import generate_password_hash
+import sqlite3
 
 app = Flask(__name__)
+app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-key-for-spendly")
 
 with app.app_context():
     init_db()
@@ -17,8 +21,34 @@ def landing():
     return render_template("landing.html")
 
 
-@app.route("/register")
+@app.route("/register", methods=["GET", "POST"])
 def register():
+    if request.method == "POST":
+        name = request.form.get("name")
+        email = request.form.get("email")
+        password = request.form.get("password")
+
+        if not name or not email or not password:
+            flash("All fields are required", "error")
+            return render_template("register.html")
+
+        hashed_password = generate_password_hash(password)
+
+        try:
+            conn = get_db()
+            with conn:
+                conn.execute(
+                    "INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)",
+                    (name, email, hashed_password)
+                )
+            flash("Account created successfully! Please sign in.", "success")
+            return redirect(url_for("login"))
+        except sqlite3.IntegrityError:
+            flash("Email already registered", "error")
+            return render_template("register.html")
+        finally:
+            conn.close()
+
     return render_template("register.html")
 
 
