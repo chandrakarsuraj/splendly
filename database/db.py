@@ -1,4 +1,5 @@
 import sqlite3
+from werkzeug.security import generate_password_hash
 
 DATABASE = "expense_tracker.db"
 
@@ -17,10 +18,10 @@ def init_db():
         conn.execute("""
             CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                username TEXT UNIQUE NOT NULL,
-                password TEXT NOT NULL,
+                name TEXT NOT NULL,
                 email TEXT UNIQUE NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                password_hash TEXT NOT NULL,
+                created_at TEXT DEFAULT (datetime('now'))
             )
         """)
 
@@ -31,43 +32,51 @@ def init_db():
                 user_id INTEGER NOT NULL,
                 amount REAL NOT NULL,
                 category TEXT NOT NULL,
+                date TEXT NOT NULL,
                 description TEXT,
-                date DATE NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                created_at TEXT DEFAULT (datetime('now')),
                 FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
             )
         """)
     conn.close()
 
 def seed_db():
-    """Inserts sample data for development."""
+    """Inserts sample data for development if no users exist."""
     conn = get_db()
     with conn:
-        # Sample user
+        # Idempotency check: return early if any user exists
+        user_exists = conn.execute("SELECT 1 FROM users LIMIT 1").fetchone()
+        if user_exists:
+            return
+
+        # Demo user
         conn.execute(
-            "INSERT OR IGNORE INTO users (username, password, email) VALUES (?, ?, ?)",
-            ("testuser", "hashed_password_123", "test@example.com")
+            "INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)",
+            ("Demo User", "demo@spendly.com", generate_password_hash("demo123"))
         )
 
         # Get the user ID
-        user = conn.execute("SELECT id FROM users WHERE username = 'testuser'").fetchone()
+        user = conn.execute("SELECT id FROM users WHERE email = 'demo@spendly.com'").fetchone()
         if user:
             user_id = user['id']
-            # Sample expenses
+            # Sample expenses (8 total, covering all 7 categories)
             expenses = [
-                (user_id, 15.50, "Food", "Lunch at cafe", "2023-10-01"),
-                (user_id, 50.00, "Transport", "Gas", "2023-10-02"),
-                (user_id, 120.00, "Shopping", "New shoes", "2023-10-03"),
-                (user_id, 12.00, "Entertainment", "Movie ticket", "2023-10-04"),
+                (user_id, 15.50, "Food", "2023-10-01", "Lunch at cafe"),
+                (user_id, 50.00, "Transport", "2023-10-02", "Gas"),
+                (user_id, 120.00, "Bills", "2023-10-03", "Internet Bill"),
+                (user_id, 45.00, "Health", "2023-10-04", "Pharmacy"),
+                (user_id, 12.00, "Entertainment", "2023-10-05", "Movie ticket"),
+                (user_id, 80.00, "Shopping", "2023-10-06", "New shoes"),
+                (user_id, 20.00, "Other", "2023-10-07", "Misc item"),
+                (user_id, 25.00, "Food", "2023-10-08", "Dinner"),
             ]
             conn.executemany(
-                "INSERT INTO expenses (user_id, amount, category, description, date) VALUES (?, ?, ?, ?, ?)",
+                "INSERT INTO expenses (user_id, amount, category, date, description) VALUES (?, ?, ?, ?, ?)",
                 expenses
             )
     conn.close()
 
 if __name__ == "__main__":
-    # Allow running this script directly to setup the database
     print("Initializing database...")
     init_db()
     print("Seeding database...")
