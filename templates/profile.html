@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile — {{ user.name }}{% endblock %}
+
+{% block content %}
+<div class="main-content" style="padding: 4rem 2rem; max-width: var(--max-width); margin: 0 auto;">
+
+    <!-- User Info Card -->
+    <div class="auth-card" style="display: flex; align-items: center; gap: 2rem; margin-bottom: 3rem; text-align: left;">
+        <div class="profile-avatar" style="width: 80px; height: 80px; background: var(--accent); color: var(--paper); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 2rem; font-weight: bold;">
+            {{ user.name[0] }}
+        </div>
+        <div style="flex: 1;">
+            <h2 style="font-family: var(--font-display); font-size: 2rem; color: var(--ink); margin-bottom: 0.25rem;">{{ user.name }}</h2>
+            <p style="color: var(--ink-muted); font-size: 1rem;">{{ user.email }} &bull; Member since {{ user.join_date }}</p>
+        </div>
+    </div>
+
+    <!-- Summary Stats Row -->
+    <div class="features-inner" style="margin-bottom: 3rem; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+        {% for stat in stats %}
+        <div class="feature-card" style="text-align: center;">
+            <div class="mock-label" style="margin-bottom: 0.5rem;">{{ stat.label }}</div>
+            <div class="mock-total" style="font-size: 1.5rem;">{{ stat.value }}</div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 3rem;">
+        <!-- Transaction History Table -->
+        <div class="auth-card" style="padding: 2rem 0; margin-bottom: 0; overflow: hidden;">
+            <h3 style="font-family: var(--font-display); font-size: 1.5rem; margin-bottom: 1.5rem; color: var(--ink); padding: 0 2rem;">Recent Transactions</h3>
+            <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                <thead style="background: var(--paper-warm);">
+                    <tr style="text-align: left; border-bottom: 1px solid var(--border); color: var(--ink-muted);">
+                        <th style="padding: 1rem 1rem;">Date</th>
+                        <th style="padding: 1rem 1rem;">Description</th>
+                        <th style="padding: 1rem 1rem;">Category</th>
+                        <th style="padding: 1rem 1rem; text-align: right;">Amount</th>
+                    </tr>
+                </thead>
+                <tbody style="padding: 0 2rem;">
+                    {% for tx in transactions %}
+                    <tr style="border-bottom: 1px solid var(--border-soft);">
+                        <td style="padding: 1rem 1rem; color: var(--ink-muted);">{{ tx.date }}</td>
+                        <td style="padding: 1rem 1rem; font-weight: 500; color: var(--ink-soft);">{{ tx.note }}</td>
+                        <td style="padding: 1rem 1rem;">
+                            <span class="hero-badge" style="margin-bottom: 0; font-size: 0.7rem; padding: 0.2rem 0.5rem;">{{ tx.category }}</span>
+                        </td>
+                        <td style="padding: 1rem 1rem; text-align: right; font-weight: 600; color: var(--ink);">{{ tx.amount }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Category Breakdown -->
+        <div class="auth-card" style="padding: 2rem; margin-bottom: 0;">
+            <h3 style="font-family: var(--font-display); font-size: 1.5rem; margin-bottom: 1.5rem; color: var(--ink);">Spending Breakdown</h3>
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                {% for cat in categories %}
+                <div class="mock-bar-row" style="grid-template-columns: 1fr 60px;">
+                    <div style="width: 100%;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                            <span class="mock-cat">{{ cat.name }}</span>
+                            <span class="mock-amt">{{ cat.percentage }}%</span>
+                        </div>
+                        <div class="mock-bar-track">
+                            <div class="mock-bar" style="width: {{ cat.percentage }}%; background: {{ cat.color }};"></div>
+                        </div>
+                    </div>
+                    <div class="mock-amt" style="text-align: right; font-weight: 600;">
+                        <!-- Amount would go here in real impl -->
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
