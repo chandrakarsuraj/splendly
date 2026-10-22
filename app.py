@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 from database.db import init_db, seed_db, get_db
 from werkzeug.security import generate_password_hash
 import sqlite3
@@ -52,8 +52,14 @@ def register():
     return render_template("register.html")
 
 
-@app.route("/login")
+@app.route("/login", methods=["GET", "POST"])
 def login():
+    if request.method == "POST":
+        # Mock login for testing Step 4
+        session["user_id"] = 1
+        session["username"] = "Demo User"
+        flash("Logged in successfully!", "success")
+        return redirect(url_for("profile"))
     return render_template("login.html")
 
 
@@ -69,12 +75,40 @@ def terms():
 
 @app.route("/logout")
 def logout():
-    return "Logout — coming in Step 3"
+    session.clear()
+    flash("You have been signed out.", "success")
+    return redirect(url_for("landing"))
 
 
 @app.route("/profile")
 def profile():
-    return "Profile page — coming in Step 4"
+    if not session.get("user_id"):
+        return redirect(url_for("login"))
+
+    # Mock data for Step 4
+    user = {
+        "name": "Demo User",
+        "email": "demo@spendly.com",
+        "join_date": "October 2023"
+    }
+    stats = [
+        {"label": "Total Spent", "value": "₹12,450.00"},
+        {"label": "Transactions", "value": "42"},
+        {"label": "Top Category", "value": "Food"},
+    ]
+    transactions = [
+        {"date": "2023-10-20", "category": "Food", "amount": "₹350.00", "note": "Starbucks Coffee"},
+        {"date": "2023-10-19", "category": "Transport", "amount": "₹120.00", "note": "Uber Ride"},
+        {"date": "2023-10-18", "category": "Shopping", "amount": "₹2,100.00", "note": "Amazon Order"},
+    ]
+    categories = [
+        {"name": "Food", "percentage": 40, "color": "var(--accent)"},
+        {"name": "Transport", "percentage": 25, "color": "var(--accent-2)"},
+        {"name": "Shopping", "percentage": 20, "color": "var(--accent)"},
+        {"name": "Other", "percentage": 15, "color": "var(--accent-2)"},
+    ]
+
+    return render_template("profile.html", user=user, stats=stats, transactions=transactions, categories=categories)
 
 
 @app.route("/expenses/add")
